@@ -34,6 +34,10 @@ def taylor_coseno(x, n):
         cos += ((-1)**i * x**(2*i)) / factorial(2*i)
     return cos
 
+def taylo_arctan(x,n):
+    arctan=0
+    for i in range(0,n):
+        arctan+= (-1)**i * (x**(2*i+1)/(2*i+1))
 
 def dft(lista):
 

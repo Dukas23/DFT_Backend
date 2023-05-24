@@ -1,11 +1,15 @@
 """Modulo de flask"""
-from flask import request, render_template
+from flask import Flask, request, jsonify, redirect, url_for,render_template
+from flask_cors import CORS 
 
-from flask import Flask, request, jsonify, redirect, url_for
+
 from fft.dft import dft
 from config import config
 
+
 app = Flask(__name__)
+
+CORS(app)   
 
 
 @app.route('/')
