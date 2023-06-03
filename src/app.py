@@ -1,76 +1,83 @@
-"""Modulo de flask"""
-from flask import Flask, request, jsonify, redirect, url_for, render_template
+"""Modulo de flask Backend"""
+from flask import Flask, request, jsonify
 from flask_cors import CORS
-from ctypes import CDLL, c_int, POINTER
+from ctypes import CDLL, c_int, POINTER, c_double, Structure
+import ctypes
 
 
 from fft.dft import dft
-from config import config
 
 
 app = Flask(__name__)
-
-libfft = CDLL('/home/ubuntu/Proyectos/dft.so')  # cargamos la libreria
-
-CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "http://52.87.153.247:8083",
+            "expose_headers": "X-Custom-Header", "methods": ["GET", "POST"], "supports_credentials": True}})
 
 
-@app.route('/')
-def index():
-    return render_template("hola mundo")
+# Se define la estructura Complex en Python
+class Complex(ctypes.Structure):
+    _fields_ = [
+        ('real', ctypes.c_double),
+        ('imag', ctypes.c_double)
+    ]
 
 
+# Ruta para el llamado de la apiRest de lenguaje C
 @app.route('/calcular-fft-c', methods=['POST'])
 def calcular_fft_c():
-    # Obtén el JSON recibido del cuerpo de la solicitud
-    data = request.json['data']
+    # Se recibe el JSON enviado en la solicitud POST
+    data = request.get_json()
 
-    # Convierte la lista de Python a un array de C
-    n = len(data)
-    c_data = (c_int * n)(*data)
+    # Se extrae la lista de valores del JSON
+    lista = data['data']
 
-    # Llama a la función de la librería para calcular la FFT
-    libfft.calcular_fft(c_data, n)
+    # Cargamos la librería C con la función dft
+    lib = CDLL('/home/ubuntu/Proyectos/dft.so')
 
-    # Obtiene los resultados de la FFT del array de C
-    results = list(c_data)
+    # Define el tipo de retorno de la función dft
+    lib.dft.restype = POINTER(Complex)
 
-    # Crea un nuevo JSON con los resultados de la FFT
-    json_result = {
-        'results': results
+    # Convertimos la lista a un array de tipo double en C
+    arr = (c_double * len(lista))(*lista)
+
+    # Llamamos a la función dft de la librería C
+    resultados_ptr = lib.dft(arr, c_int(len(lista)))
+
+    # Obtiene los resultados de la parte real e imaginaria en Python
+    resultados = [resultados_ptr[i] for i in range(len(lista))]
+
+    # Separamos los resultados en formato JSON en la parte real e imaginaria
+    response = {
+        'real': [r.real for r in resultados],
+        'imaginary': [r.imag for r in resultados]
     }
 
-    # Devuelve el JSON como respuesta
-    return jsonify(json_result)
+    # Liberamos la memoria asignada en C
+    lib.free(resultados_ptr)
+
+    # Se retorna la respuesta en formato JSON
+    return jsonify(response)
 
 
-# TODO: Probar la implentacion para la funcion de c
+# Ruta para el llamado de la apiRest de lenguaje Python
 @app.route('/calcular-fft-python', methods=['POST'])
 def calcular_fft():
-    # Obtén el JSON recibido del cuerpo de la solicitud
+    # Obtemos el JSON recibido del cuerpo de la solicitud
     data = request.json['data']
 
-    # Realiza la FFT en la lista de datos
+    # Realizamos la FFT en la lista de datos
     result = dft(data)
 
+    # Sacamos la parte real e imaginaria por separado
     real = [x.real for x in result]
     imaginary = [x.imag for x in result]
-    # Crea un nuevo JSON con los resultados de la FFT
+    # Creamos un nuevo JSON con los resultados de la FFT
     json_result = {
         'real': real,
         'imaginary': imaginary
     }
-    # print(f'contendio del json es {json_result}')
     # Devuelve el JSON como respuesta
     return jsonify(json_result)
 
 
-def not_found(error):
-    # al no encontrar la pagina lo enviamos a index
-    return redirect(url_for('index'))
-
-
 if __name__ == '__main__':
-    app.config.from_object(config['development'])
-    app.register_error_handler(404, not_found)
-    app.run()
+    app.run(host="0.0.0.0")

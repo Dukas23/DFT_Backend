@@ -1,15 +1,4 @@
-
-
-def ordenar(lista):
-    izquierda = []
-    derecha = []
-    for num in lista:
-        if num is not None:
-            if num % 2 == 0:
-                izquierda.append(num)
-            else:
-                derecha.append(num)
-    return izquierda + derecha
+""" Se recibe el numero al que se le quiere calcular el factorial"""
 
 
 def factorial(n):
@@ -21,11 +10,17 @@ def factorial(n):
     return fact
 
 
+"""Se recibe la funcion X y el numero de veces que debe iterarse"""
+
+
 def taylor_seno(x, n):
     sen = 0
     for i in range(0, n):
         sen += ((-1)**i * x**(2*i+1)) / factorial(2*i+1)
     return sen
+
+
+"""Se recibe la funcion X y el numero de veces que debe iterarse"""
 
 
 def taylor_coseno(x, n):
@@ -34,10 +29,9 @@ def taylor_coseno(x, n):
         cos += ((-1)**i * x**(2*i)) / factorial(2*i)
     return cos
 
-def taylo_arctan(x,n):
-    arctan=0
-    for i in range(0,n):
-        arctan+= (-1)**i * (x**(2*i+1)/(2*i+1))
+
+"""Recibe una lista de numeros, luego estos se separan con el enfoque de divide y venceras, retornando valores con parte real e imaginaria """
+
 
 def dft(lista):
 
