@@ -11,11 +11,24 @@
 Una manera de calcular las funciones seno y coseno las cuales son necesarias para el calculo de
 la FFT es mediante las aproximaciones por series de Taylor y estas se puede expresar como:
 
+Seno de x:
+
 $$
-\text{\sin(x) = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \ldots \\ \\
-\sin(x) = \sum_{n=0}^{\infty} (-1)^n \frac{x^{2n+1}}{(2n+1)!}\\ \\
-\cos(x) = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \frac{x^6}{6!} + \ldots} \\ \\
-\cos(x) = \sum_{n=0}^{\infty} (-1)^n \frac{x^{2n}}{(2n)!}
+\sin(x) = x - \frac{{x^3}}{{3!}} + \frac{{x^5}}{{5!}} - \frac{{x^7}}{{7!}} + \ldots
+$$
+
+$$
+\sin(x) = \sum_{n=0}^{\infty} (-1)^n \frac{{x^{2n+1}}}{{(2n+1)!}}
+$$
+
+Coseno de x:
+
+$$
+\cos(x) = 1 - \frac{{x^2}}{{2!}} + \frac{{x^4}}{{4!}} - \frac{{x^6}}{{6!}} + \ldots
+$$
+
+$$
+\cos(x) = \sum_{n=0}^{\infty} (-1)^n \frac{{x^{2n}}}{{(2n)!}}
 $$
 
 Al aproximar estas serie mediante el número finito de términos, podemos obtener valores
