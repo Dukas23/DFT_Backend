@@ -1,3 +1,6 @@
+#### Este repositorio es la parte del Backend para el proyecto FFT. El FrontEnd se puede encontrar en este repositorio: https://github.com/RennfahrerU/DFT_FrontEnd
+
+
 # Implementación de la Transformada Rápida de Fourier (FFT) en el backend
 
 ## Índice
